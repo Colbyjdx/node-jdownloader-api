@@ -111,20 +111,13 @@ const callAction = (action, deviceId, params) => {
     return Promise.reject(new Error('Not connected'));
   }
   const query = `/t_${encodeURI(__sessionToken)}_${encodeURI(deviceId)}${action}`;
-  let json;
+  let json = {
+    url: action,
+    rid: uniqueRid(),
+    apiVer: __apiVer,
+  };
   if (params) {
-    json = {
-      url: action,
-      params,
-      rid: uniqueRid(),
-      apiVer: __apiVer,
-    };
-  } else {
-    json = {
-      url: action,
-      rid: uniqueRid(),
-      apiVer: __apiVer,
-    };
+    json.params = [JSON.stringify(params)];
   }
   const jsonData = encrypt(JSON.stringify(json), __deviceEncryptionToken);
   const url = __ENPOINT + query;
