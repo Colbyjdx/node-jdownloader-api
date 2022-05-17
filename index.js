@@ -147,6 +147,8 @@ const updateEncryptionToken = (oldTokenBytes, updateToken) => {
   return crypto.SHA256(thirdbuffer, { asBytes: true });
 };
 
+exports.callAction = callAction;
+
 exports.connect = (username, password) => {
   __loginSecret = createSecret(username, password, __SERVER_DOMAIN);
   __deviceSecret = createSecret(username, password, __DEVICE_DOMAIN);
@@ -216,76 +218,3 @@ exports.getDirectConnectionInfos = deviceId => new Promise((resolve, rejected) =
       rejected(error);
     });
 });
-
-exports.addLinks = (links, deviceId, autostart) => {
-  const params = `{"priority":"DEFAULT","links":"${links}","autostart":${autostart}}`;
-  return new Promise((resolve, rejected) => {
-    callAction('/linkgrabberv2/addLinks', deviceId, [params])
-      .then((val) => {
-        resolve(val);
-      }).catch((error) => {
-        rejected(error);
-      });
-  });
-};
-
-exports.queryLinks = (deviceId) => {
-  const params = `{"addedDate" : true,
-                   "bytesLoaded": true,
-                   "bytesTotal": true,
-                   "enabled": true,
-                   "finished": true,
-                   "url": true,
-                   "status": true,
-                   "speed": true,
-                   "finishedDate": true,
-                   "priority" : true,
-                   "extractionStatus": true,
-                   "host": true,
-                   "running" : true}`;
-  return new Promise((resolve, rejected) => {
-    callAction('/downloadsV2/queryLinks', deviceId, [params])
-      .then((val) => {
-        resolve(val);
-      }).catch((error) => {
-        rejected(error);
-      });
-  });
-};
-
-exports.queryPackages = (deviceId, packagesIds) => {
-  const params = `{"addedDate" : true,
-  "bytesLoaded": true,
-  "bytesTotal": true,
-  "enabled": true,
-  "finished": true,
-  "url": true,
-  "status": true,
-  "speed": true,
-  "finishedDate": true,
-  "priority" : true,
-  "extractionStatus": true,
-  "host": true,
-  "running" : true,
-  "packageUUIDs" : [${packagesIds}]}`;
-  return new Promise((resolve, rejected) => {
-    callAction('/downloadsV2/queryPackages', deviceId, [params])
-      .then((val) => {
-        resolve(val);
-      }).catch((error) => {
-        rejected(error);
-      });
-  });
-};
-
-exports.cleanUpFinishedLinks = (deviceId) => {
-    const params =  ["[]", "[]", "DELETE_FINISHED", "REMOVE_LINKS_ONLY", "ALL"];
-    return new Promise((resolve, rejected) => {
-        callAction('/downloadsV2/cleanup', deviceId, params)
-          .then((val) => {
-            resolve(val);
-          }).catch((error) => {
-            rejected(error);
-          });
-      });
-};
